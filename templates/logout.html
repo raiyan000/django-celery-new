@@ -1,0 +1,277 @@
+{% load static %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<link rel="stylesheet" href="{% static 'css.css'%}">
+<link rel="stylesheet" href="/static/css.css">
+
+<div class="container">
+    <h1 >Users Page</h1>
+
+{% if user.is_authenticated %}
+
+{% comment %} <button type="button" class="btn btn-outline-info"><a href="{% url 'download-data' %}">Download</a></button>    
+<button type="button" class="btn btn-outline-info"><a href="{% url 'attach-file' %}">Send-Mail-Now</a></button>     {% endcomment %}
+
+<form name="myForm" action="{% url 'mailing' %}" onsubmit="return validateForm()" method="post">
+
+{% csrf_token %}
+
+<label for="email_id">User Email:</label>
+<select name="email_id" id="email_id">
+<option value="">None</option>
+  <option value="{{request.user.email}}">{{request.user.email}}</option>    
+</select>
+  <span id="email_error" style="color:red;">*</span> 
+
+{% comment %} <input type="hidden" name="dateTime" id="dateTime" value=""> {% endcomment %}
+
+<div>scheduler</div>    
+<input type="button" id="btn1" value="yes" onclick="show(this)">
+
+<div id="datefield" style="display:none">
+    Date:
+    <input type="date" id="date" name="date">
+</div>
+
+<div id="datefield_new" style="display:none">
+  Date2(optional):
+  <input type="date" id="date_new" name="date_new">
+</div>
+
+
+<div id="timefield" style="display:none">
+    Time:
+    <input type="time" name="timing" id="timing">
+  
+  <div>Refresh Period</div>
+    <input type="button" id="btn2" value="yes" onclick="show2(this)">
+      <div id="check1" style="display:none">
+        monthly:
+        <input type="radio" name="refresh_period" id="monthly" value="monthly">
+        weekly:
+        <input type="radio" name="refresh_period" id="weekly" value="weekly">
+        hourly:
+        <input type="radio" name="refresh_period" id="hourly" value="hourly">
+        daily:
+        <input type="radio" name="refresh_period" id="daily" value="daily">
+      </div>
+  </div>
+
+<button type="submit" class="btn btn-outline-info">Send</a></button>    
+
+</form>
+
+{% if user.is_superuser %}
+
+<div class="d-flex justify-content-end">
+<button class="btn btn-success" onclick="loadEmail()">Emial history</button>
+  {% comment %} <a href="{% url 'email-history' %}" class="btn btn-success">Email History</a> {% endcomment %}
+   <div  id ="new_add" class="col-md-6" style="display: none;">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Email From</th>
+          <th>Email To</th>
+          <th>Status</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+    
+      <tbody>
+          {% for email  in email_history %}
+          <tr>
+              <td>{{email.email_from}}</td>
+              <td>{{email.email_to}}</td>
+              <td>{{email.status}}</td>
+              <td>{{email.dateTime|date:"D d M Y, P" }}</td>
+          </tr>
+          
+          {% endfor %}
+      </tbody>
+    </table>
+    </div>
+</div>
+
+
+<form name="myForm2" action={% url 'mailing_all' %} onsubmit="return validateForm2()" method="post">
+  {% csrf_token %}
+  <br>
+  <label for="email_all">All Email</label>
+  <select name="email_all" id="email_all">
+     <option value=reciepient_list>All</option>
+     {% for user in users %}
+     <option value="{{user.email}}">{{user.email}}</option>
+     {% endfor %}  
+  </select>
+  <span id="email_all" style="color:red;">*</span>
+
+<div>scheduler</div>    
+  <input type="button" id="btn3" value="yes" onclick="show3(this)">
+  <div id="datefield2" style="display:none">
+      Date:
+      <input type="date" id="date" name="date">
+  </div>
+  
+  <div id="timefield2" style="display:none">
+      Time:
+      <input type="time" name="timing" id="timing">
+      <div>Refresh Period</div>
+  
+      <input type="button" id="btn4" value="yes" onclick="show4(this)">
+  
+        <div id="check2" style="display:none">
+          monthly:
+          <input type="radio" name="refresh_period" id="monthly">
+          weekly:
+          <input type="radio" name="refresh_period" id="weekly">
+          hourly:
+          <input type="radio" name="refresh_period" id="hourly">
+          daily:
+          <input type="radio" name="refresh_period" id="daily">
+      
+        </div>
+      </div>
+ 
+<button type="submit" class="btn btn-outline-info">Send</a></button>  
+</form>
+
+{% endif %}  
+
+{% else%}
+<h1>Please Login First</h1>
+<button type="button" class="btn btn-outline-success"><a href="{% url 'login' %}">Login</a></button>    
+{% endif %}
+</div>
+
+<script>      
+  
+  function validateForm(){
+    let x=document.forms["myForm"]["email_id"].value;
+    
+    {% comment %} let curDate=new Date();           {% endcomment %}
+    
+    {% comment %} document.getElementById('dateTime').value = curDate.toISOString();  {% endcomment %}
+
+
+    if (x=="") {
+        document.getElementById("email_error").innerHTML=  "Required";  
+        return false;
+    }
+    return true;      
+  }
+
+</script> 
+<script>
+
+  function validateForm2(){
+      debugger;
+      let x=document.forms["myForm2"]["email_all"].value;
+      if (x=="") {
+          document.getElementById("email_all").innerHTML=  "Required";  
+          return false;
+      }
+      return true;          
+  }
+
+</script>
+<script>
+
+  function show(btn1){
+    var datefield=document.getElementById('datefield');
+    var datefield_new=document.getElementById('datefield_new');
+    var timefield=document.getElementById('timefield');
+      if (btn1.value=="yes"){
+          datefield.style.display="block"
+          datefield_new.style.display="block"
+          timefield.style.display="block"
+          btn1.value="no"
+      }
+      else{
+          datefield.style.display="none"
+          datefield_new.style.display="none"
+          timefield.style.display="none"
+          btn1.value="yes"
+      }            
+  }
+
+function show2(btn2){
+      var check1=document.getElementById('check1');
+      if(btn2.value=="yes"){
+      check1.style.display="block"
+      btn2.value="no"
+  }
+  else{ 
+      check1.style.display="none"
+      btn2.value="yes"
+  }
+}
+</script>
+
+<script>
+
+  function show3(btn3){
+    var datefield2=document.getElementById('datefield2');
+    var timefield2=document.getElementById('timefield2');
+    if (btn3.value=="yes"){
+        datefield2.style.display="block"
+        timefield2.style.display="block"
+        btn3.value="no"
+    }
+    else{
+        datefield2.style.display="none"
+        timefield2.style.display="none"
+        btn3.value="yes"
+    }            
+  }
+  
+  
+  function show4(btn4){
+    var check2=document.getElementById('check2');
+    if(btn4.value=="yes"){
+    check2.style.display="block"
+    btn4.value="no"
+  }
+
+else{ 
+    check2.style.display="none"
+    btn4.value="yes"
+}
+}
+</script>
+<script>
+  function loadEmail(){
+    $.ajax({
+      url:'{% url 'email-history' %}',
+      type:"GET",
+     
+        success: function(response) {
+          var tableBody = $('#new_add').find('tbody');
+          {% comment %} tableBody.empty();  {% endcomment %}
+
+          // Looping through the response and populating the table
+          for (let i = 0; i < response.length; i++) {
+            let email = response[i];
+            let row = `<tr>
+                          <td>${email.email_from}</td>
+                          <td>${email.email_to}</td>
+                          <td>${email.status}</td>
+                          <td>${email.dateTime}</td>
+                       </tr>`;
+            tableBody.append(row);
+        }
+        
+          $('#new_add').show(); // Show the table (assuming it's hidden initially)
+      },
+
+      error:function(error){
+        console.log("error")
+      }
+    
+    })
+  }
+  
+</script>
