@@ -519,9 +519,6 @@ def mailing(request):
       response['message'] = str(e)
       print("Exception occurred:", e)
             
-    # file_path2= "C:/Users/Rahul - Arivani/Desktop/celery messages/send_mail/mail.xlsx"   
-    # file_path2="D:/celery-send-mail-master-21/celery-send-mail-master/static/Employee-2023-09-06.xlsx"
-    # file_path2="D:/celery-send-mail-master-21/celery-send-mail-master/static/Employee.xlsx"
     file_path2 = f"{settings.BASE_DIR}/original_new.xlsx"
 
     user=request.user
