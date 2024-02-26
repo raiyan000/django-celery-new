@@ -520,8 +520,10 @@ def mailing(request):
       print("Exception occurred:", e)
             
     # file_path2= "C:/Users/Rahul - Arivani/Desktop/celery messages/send_mail/mail.xlsx"   
-    file_path2="D:/celery-send-mail-master-21/celery-send-mail-master/static/Employee-2023-09-06.xlsx"
-    
+    # file_path2="D:/celery-send-mail-master-21/celery-send-mail-master/static/Employee-2023-09-06.xlsx"
+    # file_path2="D:/celery-send-mail-master-21/celery-send-mail-master/static/Employee.xlsx"
+    file_path2 = f"{settings.BASE_DIR}/original_new.xlsx"
+
     user=request.user
     email=request.user.email
     host_user_email=settings.EMAIL_HOST_USER
@@ -685,7 +687,9 @@ def mailing_all(request):
   else:
     reciepients=[selected_email]
   
-  file_path2="D:/celery-send-mail-master-21/celery-send-mail-master/static/Employee-2023-09-06.xlsx"
+  # file_path2="D:/celery-send-mail-master-21/celery-send-mail-master/static/Employee-2023-09-06.xlsx"
+  file_path2 = f"{settings.BASE_DIR}/original_new.xlsx"
+
   subject="Your Email Details"
 
   import re
@@ -771,10 +775,11 @@ def mailing_all(request):
 
 def email_history(request):
   email_history=EmailHistory.objects.all().order_by('-dateTime')
+  
   data = [{'email_from': email.email_from, 'email_to': email.email_to, 'status': email.status, 'dateTime': email.dateTime} for email in email_history]
-  return JsonResponse(data,safe=False)
+  # return JsonResponse(data,safe=False)
 
-  # return render(request,'email_history.html',{'email_history':email_history})
+  return render(request,'email_history.html',{'email_history':email_history})
  
  
 
